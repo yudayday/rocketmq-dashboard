@@ -276,6 +276,13 @@
         </dependency>
 
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>prod</id>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
