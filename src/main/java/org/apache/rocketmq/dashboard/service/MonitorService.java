@@ -17,6 +17,8 @@
 package org.apache.rocketmq.dashboard.service;
 
 import java.util.Map;
+
+import org.apache.rocketmq.dashboard.model.ClusterConfig;
 import org.apache.rocketmq.dashboard.model.ConsumerMonitorConfig;
 
 public interface MonitorService {
@@ -27,4 +29,8 @@ public interface MonitorService {
     ConsumerMonitorConfig queryConsumerMonitorConfigByGroupName(String consumeGroupName);
 
     boolean deleteConsumerMonitor(String consumeGroupName);
+
+    boolean createOrUpdateClusterConfig(ClusterConfig config);
+
+    ClusterConfig queryClusterConfig();
 }

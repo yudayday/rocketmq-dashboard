@@ -17,6 +17,9 @@
 package org.apache.rocketmq.dashboard.controller;
 
 import javax.annotation.Resource;
+
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.dashboard.model.ConsumerMonitorConfig;
 import org.apache.rocketmq.dashboard.permisssion.Permission;
 import org.apache.rocketmq.dashboard.service.MonitorService;
@@ -27,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/monitor")
@@ -40,8 +45,9 @@ public class MonitorController {
     @RequestMapping(value = "/createOrUpdateConsumerMonitor.do", method = {RequestMethod.POST})
     @ResponseBody
     public Object createOrUpdateConsumerMonitor(@RequestParam String consumeGroupName, @RequestParam int minCount,
-        @RequestParam int maxDiffTotal) {
-        return monitorService.createOrUpdateConsumerMonitor(consumeGroupName, new ConsumerMonitorConfig(minCount, maxDiffTotal));
+        @RequestParam String maxDiffTotal, String telephones, String dingdingHook, String eventLevel) {
+        List<String> tel =  StringUtils.isNotBlank(telephones) ? Lists.newArrayList(telephones.split(",")) : Lists.newArrayList();
+        return monitorService.createOrUpdateConsumerMonitor(consumeGroupName, new ConsumerMonitorConfig(minCount, maxDiffTotal, tel, dingdingHook, eventLevel));
     }
 
     @RequestMapping(value = "/consumerMonitorConfig.query", method = {RequestMethod.GET})

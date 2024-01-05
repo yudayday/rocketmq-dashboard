@@ -16,16 +16,24 @@
  */
 package org.apache.rocketmq.dashboard.model;
 
+import java.util.List;
+
 public class ConsumerMonitorConfig {
     private int minCount;
-    private int maxDiffTotal;
+    private String maxDiffTotal;
+    private List<String> telephones;
+    private String dingdingHook;
+    private String eventLevel;
 
     public ConsumerMonitorConfig() {
     }
 
-    public ConsumerMonitorConfig(int minCount, int maxDiffTotal) {
+    public ConsumerMonitorConfig(int minCount, String maxDiffTotal, List<String> telephones, String dingdingHook, String eventLevel) {
         this.minCount = minCount;
         this.maxDiffTotal = maxDiffTotal;
+        this.telephones = telephones;
+        this.dingdingHook = dingdingHook;
+        this.eventLevel = eventLevel;
     }
 
     public int getMinCount() {
@@ -36,11 +44,35 @@ public class ConsumerMonitorConfig {
         this.minCount = minCount;
     }
 
-    public int getMaxDiffTotal() {
+    public String getMaxDiffTotal() {
         return maxDiffTotal;
     }
 
-    public void setMaxDiffTotal(int maxDiffTotal) {
+    public void setMaxDiffTotal(String maxDiffTotal) {
         this.maxDiffTotal = maxDiffTotal;
+    }
+
+    public List<String> getTelephones() {
+        return telephones;
+    }
+
+    public void setTelephones(List<String> telephones) {
+        this.telephones = telephones;
+    }
+
+    public String getDingdingHook() {
+        return dingdingHook;
+    }
+
+    public void setDingdingHook(String dingdingHook) {
+        this.dingdingHook = dingdingHook;
+    }
+
+    public String getEventLevel() {
+        return eventLevel;
+    }
+
+    public void setEventLevel(String eventLevel) {
+        this.eventLevel = eventLevel;
     }
 }

@@ -17,9 +17,12 @@
 package org.apache.rocketmq.dashboard.config;
 
 import java.util.ArrayList;
+
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.common.MixAll;
+import org.apache.rocketmq.dashboard.util.ProjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -46,7 +49,7 @@ public class RMQConfigure {
     private volatile String isVIPChannel = System.getProperty(SEND_MESSAGE_WITH_VIP_CHANNEL_PROPERTY, "true");
 
 
-    private String dataPath = "/tmp/rocketmq-console/data";
+    private String dataPath = "/data/project/"+ ProjectUtil.getLocalName() +"/rocketmq-dashboard/data";
 
     private boolean enableDashBoardCollect;
 
@@ -61,6 +64,18 @@ public class RMQConfigure {
     private Long timeoutMillis;
 
     private List<String> namesrvAddrs = new ArrayList<>();
+
+    private volatile int healthCheckPeriod = 60;
+
+    private volatile int healthCheckAvgTookThreshold = 1000;
+
+    private volatile String healthCheckDingDingHook = "https://oapi.dingtalk.com/robot/send?access_token=fc6ab9b4a50c3950d9f8acb2b2b3a3185bfa29e8f218a14fa92339e94bf5233f";
+
+    private volatile String healthCheckDingDingReceiver = "15355814054";
+
+    private volatile int healthCheckFailureRate = 50;
+
+    private volatile int monitorPeriod = 300;
 
     public String getAccessKey() {
         return accessKey;
@@ -105,6 +120,7 @@ public class RMQConfigure {
                  StringUtils.isAnyEmpty(this.accessKey, this.secretKey));
     }
     public String getRocketMqDashboardDataPath() {
+        this.dataPath = "/data/project/"+ ProjectUtil.getLocalName() +"/rocketmq-console/data";
         return dataPath;
     }
 
@@ -158,6 +174,65 @@ public class RMQConfigure {
 
     public void setTimeoutMillis(Long timeoutMillis) {
         this.timeoutMillis = timeoutMillis;
+    }
+
+    public int getHealthCheckPeriod() {
+        return healthCheckPeriod;
+    }
+
+    public void setHealthCheckPeriod(int healthCheckPeriod) {
+        logger.info("set healthCheckPeriod={}", healthCheckPeriod);
+        this.healthCheckPeriod = healthCheckPeriod;
+    }
+
+    public int getHealthCheckAvgTookThreshold() {
+        return healthCheckAvgTookThreshold;
+    }
+
+    public void setHealthCheckAvgTookThreshold(int healthCheckAvgTookThreshold) {
+        logger.info("set healthCheckAvgTookThreshold={}", healthCheckPeriod);
+        this.healthCheckAvgTookThreshold = healthCheckAvgTookThreshold;
+    }
+
+    public int getHealthCheckFailureRate() {
+        return healthCheckFailureRate;
+    }
+
+    public void setHealthCheckFailureRate(int healthCheckFailureRate) {
+        this.healthCheckFailureRate = healthCheckFailureRate;
+    }
+
+    public String getHealthCheckDingDingHook() {
+        return healthCheckDingDingHook;
+    }
+
+    public void setHealthCheckDingDingHook(String healthCheckDingDingHook) {
+        logger.info("set healthCheckAvgTookThreshold={}", healthCheckDingDingHook);
+        this.healthCheckDingDingHook = healthCheckDingDingHook;
+    }
+
+    public List<String> getHealthCheckDingDingReceiver() {
+        if (StringUtils.isBlank(healthCheckDingDingReceiver)) {
+            return Lists.newArrayList();
+        }
+        if (healthCheckDingDingReceiver.contains(";")) {
+            return Lists.newArrayList(healthCheckDingDingReceiver.split(";"));
+        }
+        return Lists.newArrayList(healthCheckDingDingReceiver);
+    }
+
+    public void setHealthCheckDingDingReceiver(String healthCheckDingDingReceiver) {
+        logger.info("set healthCheckDingDingReceiver={}", healthCheckDingDingHook);
+        this.healthCheckDingDingReceiver = healthCheckDingDingReceiver;
+    }
+
+    public int getMonitorPeriod() {
+        return monitorPeriod;
+    }
+
+    public void setMonitorPeriod(int monitorPeriod) {
+        logger.info("set monitorPeriod={}", monitorPeriod);
+        this.monitorPeriod = monitorPeriod;
     }
 
     // Error Page process logic, move to a central configure later
