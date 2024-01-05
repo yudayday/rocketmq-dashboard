@@ -280,6 +280,9 @@
     <profiles>
         <profile>
             <id>prod</id>
+            <build>
+                <finalName>rocketmq-dashboard</finalName>
+            </build>
         </profile>
     </profiles>
 
