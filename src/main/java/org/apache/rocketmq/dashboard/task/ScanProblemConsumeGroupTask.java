@@ -175,7 +175,7 @@ public class ScanProblemConsumeGroupTask implements Runnable, InitializingBean, 
 
         Integer maxDiffTotal = alarmIndex.getMaxDiffTotalByGroup(consumeInfo.getGroup());
         if (consumeInfo.getDiffTotal() > maxDiffTotal) {
-            String content = "警告: 集群名 【**" + clusterName + "**】 group【**" + consumeInfo.getGroup() + "**】" + "消息堆积过多 " + "当前消息堆积值【**" + consumeInfo.getDiffTotal() + "**】" + "阀值【**" + maxDiffTotal + "**】\n";
+            String content = "警告：集群名【**" + clusterName + "**】topic【**" + topicConsumerInfos.get(topicConsumerInfos.size() -1).getTopic() + "**】group【**" + consumeInfo.getGroup() + "**】" + "消息堆积过多 " + "当前消息堆积值【**" + consumeInfo.getDiffTotal() + "**】" + "阀值【**" + maxDiffTotal + "**】\n";
             Tuple2<String, Map<Integer, String>> tuple2 = getTopicConsumerInfos(topicConsumerInfos);
             content = content + tuple2.getT1();
             if (CollectionUtils.isNotEmpty(topicConsumerInfos) && clusterName.contains("ec")) {
