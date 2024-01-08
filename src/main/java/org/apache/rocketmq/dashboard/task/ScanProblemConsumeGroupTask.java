@@ -37,9 +37,11 @@ import org.apache.rocketmq.dashboard.model.TopicConsumerInfo;
 import org.apache.rocketmq.dashboard.service.ClusterService;
 import org.apache.rocketmq.dashboard.service.ConsumerService;
 import org.apache.rocketmq.dashboard.service.MonitorService;
+import org.apache.rocketmq.dashboard.service.TopicService;
 import org.apache.rocketmq.dashboard.util.DingDingUtil;
 import org.apache.rocketmq.dashboard.util.ProjectUtil;
 import org.apache.rocketmq.dashboard.util.Tuple2;
+import org.apache.rocketmq.remoting.protocol.body.TopicList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -78,31 +80,28 @@ public class ScanProblemConsumeGroupTask implements Runnable, InitializingBean, 
     @Resource
     private ClusterService clusterService;
 
+    @Resource
+    private TopicService topicService;
+
     private IArmsSdkApi armsSdkApi = new ArmsSdkApi();
 
     @Override
     public void run() {
         try {
             AlarmIndex alarmIndex = AlarmIndex.build(monitorService.queryConsumerMonitorConfig());
-            List<GroupConsumeInfo> groupConsumeInfos = consumerService.queryGroupList(true);
-
-            for (GroupConsumeInfo groupConsumeInfo : groupConsumeInfos) {
-                if (-1 == groupConsumeInfo.getDiffTotal()) {
-                    continue;
-                }
-                List<TopicConsumerInfo> topicConsumerInfos = Lists.newArrayList();
-                Integer maxDiffTotal = alarmIndex.getMaxDiffTotalByGroup(groupConsumeInfo.getGroup());
-                if (groupConsumeInfo.getDiffTotal() > maxDiffTotal) {
-                    topicConsumerInfos = consumerService.queryConsumeStatsListByGroupName(groupConsumeInfo.getGroup());
-                }
-                if (CollectionUtils.isNotEmpty(topicConsumerInfos)) {
-                    long diffTotal = 0L;
-                    for (TopicConsumerInfo topicConsumerInfo : topicConsumerInfos) {
-                        diffTotal += topicConsumerInfo.getDiffTotal();
+//            List<GroupConsumeInfo> groupConsumeInfos = consumerService.queryGroupList(true);
+            TopicList topics = topicService.fetchAllTopicList(true, false);
+            for (String topic : topics.getTopicList()) {
+                Map<String, TopicConsumerInfo> topicConsumerInfoMap = consumerService.queryConsumeStatsListByTopicName(topic);
+                for (Map.Entry<String, TopicConsumerInfo> entry : topicConsumerInfoMap.entrySet()) {
+                    Integer maxDiffTotal = alarmIndex.getMaxDiffTotalByGroup(entry.getKey());
+                    if (entry.getValue().getDiffTotal() > maxDiffTotal) {
+                        GroupConsumeInfo groupConsumeInfo = new GroupConsumeInfo();
+                        groupConsumeInfo.setGroup(entry.getKey());
+                        groupConsumeInfo.setDiffTotal(entry.getValue().getDiffTotal());
+                        sendToDingTalk(groupConsumeInfo, alarmIndex, Lists.newArrayList(entry.getValue()));
                     }
-                    groupConsumeInfo.setDiffTotal(diffTotal);
                 }
-                sendToDingTalk(groupConsumeInfo, alarmIndex, topicConsumerInfos);
             }
         } catch (Throwable throwable) {
             LOGGER.error(throwable.getMessage(), throwable);
@@ -163,16 +162,16 @@ public class ScanProblemConsumeGroupTask implements Runnable, InitializingBean, 
         eventRequest.setEventLevel(EventLevel.findByName(alarmIndex.getEventLevel(consumeInfo.getGroup())));
         eventRequest.setAlarmWebHook(alarmIndex.getHookByGroup(consumeInfo.getGroup()));
 
-        Integer minCount = alarmIndex.getMinCountByGroup(consumeInfo.getGroup());
-        if (consumeInfo.getCount() < minCount) {
-            eventRequest.setEventName(consumeInfo.getGroup() + "消费者数量过低");
-            String content = "警告: 集群名 【" + clusterName + "】 group【" + consumeInfo.getGroup() + "】" + "消费者数量过低 " + "当前消费者数量【" + consumeInfo.getCount() + "】" + "阀值【**" + minCount + "】";
-            eventRequest.setContent(content);
-            Boolean success = sendArms(eventRequest);
-            if(!success){
-                DingDingUtil.send(content, alarmIndex.getHookByGroup(consumeInfo.getGroup()), alarmIndex.getTelephonesByGroup(consumeInfo.getGroup()));
-            }
-        }
+//        Integer minCount = alarmIndex.getMinCountByGroup(consumeInfo.getGroup());
+//        if (consumeInfo.getCount() < minCount) {
+//            eventRequest.setEventName(consumeInfo.getGroup() + "消费者数量过低");
+//            String content = "警告: 集群名 【" + clusterName + "】 group【" + consumeInfo.getGroup() + "】" + "消费者数量过低 " + "当前消费者数量【" + consumeInfo.getCount() + "】" + "阀值【**" + minCount + "】";
+//            eventRequest.setContent(content);
+//            Boolean success = sendArms(eventRequest);
+//            if(!success){
+//                DingDingUtil.send(content, alarmIndex.getHookByGroup(consumeInfo.getGroup()), alarmIndex.getTelephonesByGroup(consumeInfo.getGroup()));
+//            }
+//        }
 
         Integer maxDiffTotal = alarmIndex.getMaxDiffTotalByGroup(consumeInfo.getGroup());
         if (consumeInfo.getDiffTotal() > maxDiffTotal) {
