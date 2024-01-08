@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.rocketmq.console.service.impl;
+package org.apache.rocketmq.dashboard.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Throwables;

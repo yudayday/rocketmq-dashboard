@@ -56,8 +56,8 @@ public class MonitorControllerTest extends BaseControllerTest {
         super.mockRmqConfigure();
         when(configure.getRocketMqDashboardDataPath()).thenReturn("/tmp/rocketmq-console/test/data");
         Map<String, ConsumerMonitorConfig> configMap = new ConcurrentHashMap<>();
-        configMap.put(consumeGroupName, new ConsumerMonitorConfig(0, 100));
-        configMap.put(consumeGroupName1, new ConsumerMonitorConfig(10, 200));
+        configMap.put(consumeGroupName, new ConsumerMonitorConfig(0, "100", null, null, null));
+        configMap.put(consumeGroupName1, new ConsumerMonitorConfig(10, "200", null, null, null));
         ReflectionTestUtils.setField(monitorService, "configMap", configMap);
         filePath = configure.getRocketMqDashboardDataPath()
             + File.separatorChar + "monitor" + File.separatorChar + "consumerMonitorConfig.json";

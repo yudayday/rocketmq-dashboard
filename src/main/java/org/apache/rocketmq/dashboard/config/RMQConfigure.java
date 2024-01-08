@@ -120,7 +120,7 @@ public class RMQConfigure {
                  StringUtils.isAnyEmpty(this.accessKey, this.secretKey));
     }
     public String getRocketMqDashboardDataPath() {
-        this.dataPath = "/data/project/"+ ProjectUtil.getLocalName() +"/rocketmq-console/data";
+        this.dataPath = "/data/project/"+ ProjectUtil.getLocalName() +"/data";
         return dataPath;
     }
 
