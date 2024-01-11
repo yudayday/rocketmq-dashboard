@@ -90,7 +90,7 @@ public class ScanProblemConsumeGroupTask implements Runnable, InitializingBean, 
         try {
             AlarmIndex alarmIndex = AlarmIndex.build(monitorService.queryConsumerMonitorConfig());
 //            List<GroupConsumeInfo> groupConsumeInfos = consumerService.queryGroupList(true);
-            TopicList topics = topicService.fetchAllTopicList(true, false);
+            TopicList topics = topicService.fetchAllTopicList(true, true);
             for (String topic : topics.getTopicList()) {
                 Map<String, TopicConsumerInfo> topicConsumerInfoMap = consumerService.queryConsumeStatsListByTopicName(topic);
                 for (Map.Entry<String, TopicConsumerInfo> entry : topicConsumerInfoMap.entrySet()) {
