@@ -92,6 +92,9 @@ public class ScanProblemConsumeGroupTask implements Runnable, InitializingBean, 
 //            List<GroupConsumeInfo> groupConsumeInfos = consumerService.queryGroupList(true);
             TopicList topics = topicService.fetchAllTopicList(true, true);
             for (String topic : topics.getTopicList()) {
+                if ("rmq_sys_REVIVE_LOG_erp-mq-log-new".equals(topic)) {
+                    continue;
+                }
                 Map<String, TopicConsumerInfo> topicConsumerInfoMap = consumerService.queryConsumeStatsListByTopicName(topic);
                 for (Map.Entry<String, TopicConsumerInfo> entry : topicConsumerInfoMap.entrySet()) {
                     Integer maxDiffTotal = alarmIndex.getMaxDiffTotalByGroup(entry.getKey());
